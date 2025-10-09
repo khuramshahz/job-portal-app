@@ -1,0 +1,13 @@
+# Ignore files & folders not needed in deployment
+node_modules
+client/node_modules
+client/src
+client/public
+client/.env
+.git
+.gitignore
+npm-debug.log
+.DS_Store
+README.md
+.env
+.vscode
