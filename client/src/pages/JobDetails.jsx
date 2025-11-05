@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { Box, Typography, TextField, Button, Paper } from '@mui/material'
+import { api } from '../config/api'
 
 export default function JobDetails(){
   const { id } = useParams()
@@ -11,7 +12,7 @@ export default function JobDetails(){
 
   useEffect(()=>{
     const fetchJob=async()=>{
-      const res=await axios.get(`http://localhost:5000/api/jobs/${id}`)
+      const res=await axios.get(`${api.endpoints.jobs}/${id}`)
       setJob(res.data)
     }
     fetchJob()
@@ -25,7 +26,7 @@ export default function JobDetails(){
       form.append('jobId', id)
       form.append('coverLetter', cover)
       if(file) form.append('resume', file)
-      await axios.post('http://localhost:5000/api/applications', form, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } })
+      await axios.post(api.endpoints.applications, form, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } })
       alert('Applied')
     }catch(err){
       alert(err.response?.data?.message||'Apply failed')

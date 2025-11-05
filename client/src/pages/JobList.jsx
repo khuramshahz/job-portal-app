@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Grid, Box, Typography, Pagination } from '@mui/material'
 import JobCard from '../components/JobCard'
 import Filters from '../components/Filters'
+import { api } from '../config/api'
 
 export default function JobList(){
   const [jobs,setJobs]=useState([])
@@ -13,7 +14,7 @@ export default function JobList(){
   const [location,setLocation]=useState('')
 
   const fetchJobs=async(params={})=>{
-    const res=await axios.get('http://localhost:5000/api/jobs',{ params: { ...params, page, limit: 10 } })
+    const res=await axios.get(api.endpoints.jobs,{ params: { ...params, page, limit: 10 } })
     setJobs(res.data.jobs)
     setTotalPages(res.data.totalPages)
   }

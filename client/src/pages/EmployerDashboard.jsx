@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { api } from '../config/api'
 
 export default function EmployerDashboard(){
   const [jobs,setJobs]=useState([])
@@ -12,7 +13,7 @@ export default function EmployerDashboard(){
   useEffect(()=>{
     const fetchJobs=async()=>{
       const token=localStorage.getItem('token')
-      const res=await axios.get('http://localhost:5000/api/jobs/myjobs', { headers: { Authorization: `Bearer ${token}` } })
+      const res=await axios.get(`${api.endpoints.jobs}/myjobs`, { headers: { Authorization: `Bearer ${token}` } })
       setJobs(res.data)
     }
     fetchJobs()
@@ -22,7 +23,7 @@ export default function EmployerDashboard(){
     e.preventDefault()
     try{
       const token=localStorage.getItem('token')
-      const res=await axios.post('http://localhost:5000/api/jobs', { title, company, location, type, description }, { headers: { Authorization: `Bearer ${token}` } })
+      const res=await axios.post(api.endpoints.jobs, { title, company, location, type, description }, { headers: { Authorization: `Bearer ${token}` } })
       setJobs(prev=>[res.data,...prev])
       alert('Job created')
     }catch(err){

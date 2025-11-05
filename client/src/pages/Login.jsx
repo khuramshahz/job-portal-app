@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Box, TextField, Button, Paper, Typography } from '@mui/material'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../config/api'
 
 export default function Login(){
   const [email, setEmail] = useState('')
@@ -13,7 +14,7 @@ export default function Login(){
   const submit = async (e) => {
     e.preventDefault()
     try{
-      const res = await axios.post('http://localhost:5000/api/users/login', { email, password })
+      const res = await axios.post(`${api.endpoints.users}/login`, { email, password })
       login(res.data)
       nav('/')
     }catch(err){

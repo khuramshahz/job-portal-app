@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Box, TextField, Button, Paper, Typography, MenuItem } from '@mui/material'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../config/api'
 
 export default function Register(){
   const [name,setName]=useState('')
@@ -15,7 +16,7 @@ export default function Register(){
   const submit=async(e)=>{
     e.preventDefault()
     try{
-      const res=await axios.post('http://localhost:5000/api/users/register',{name,email,password,role})
+      const res=await axios.post(`${api.endpoints.users}/register`,{name,email,password,role})
       login(res.data)
       nav('/')
     }catch(err){
