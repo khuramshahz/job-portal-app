@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Web Application Service
+  web:
+    # Use Docker Hub image (replace with your username)
+    image: YOUR_DOCKERHUB_USERNAME/job-portal-app:latest
+    # Or build from local Dockerfile:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: job-portal-web
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/job-application
+      - JWT_SECRET=your_jwt_secret_key_here
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+    networks:
+      - job-portal-network
+
+  # MongoDB Database Service with Persistent Volume
+  mongo:
+    image: mongo:7.0
+    container_name: job-portal-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=job-application
+    volumes:
+      # Named volume for data persistence
+      - mongo-data:/data/db
+    networks:
+      - job-portal-network
+
+# Named volumes for data persistence
+volumes:
+  mongo-data:
+    driver: local
+
+# Network for service communication
+networks:
+  job-portal-network:
+    driver: bridge
+
