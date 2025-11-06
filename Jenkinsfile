@@ -8,8 +8,8 @@ pipeline {
     }
 
     triggers {
-        // Poll SCM every 5 minutes to check for changes
-        pollSCM('H/5 * * * *')
+        // Trigger automatically on GitHub push via webhook
+        githubPush()
     }
 
     stages {
