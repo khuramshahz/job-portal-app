@@ -5,6 +5,12 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.jenkins.yml'
     }
     
+    // Automatic trigger: Build on push to GitHub
+    triggers {
+        // Poll SCM every minute to check for changes
+        pollSCM('H/5 * * * *')
+    }
+    
     stages {
         stage('Checkout') {
             steps {
