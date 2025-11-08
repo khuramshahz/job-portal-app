@@ -25,8 +25,14 @@ pipeline {
                 echo '🐳 Building Docker containers using docker-compose...'
                 script {
                     sh '''
-                        docker-compose down || true
-                        docker-compose up -d --build
+                        # Use docker-compose.jenkins.yml if it exists, otherwise use docker-compose.yml
+                        if [ -f docker-compose.jenkins.yml ]; then
+                            docker-compose -f docker-compose.jenkins.yml down || true
+                            docker-compose -f docker-compose.jenkins.yml up -d --build
+                        else
+                            docker-compose down || true
+                            docker-compose up -d --build
+                        fi
                     '''
                 }
             }
