@@ -6,11 +6,6 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.jenkins.yml'
     }
 
-    triggers {
-        // Trigger automatically via GitHub webhook on code push
-        githubPush()
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -77,3 +72,4 @@ pipeline {
         }
     }
 }
+
