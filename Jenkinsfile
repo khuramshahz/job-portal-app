@@ -6,6 +6,11 @@ pipeline {
         DOCKER_COMPOSE_FILE = 'docker-compose.jenkins.yml'
     }
 
+    triggers {
+        // Trigger automatically via GitHub webhook on code push
+        githubPush()
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -22,6 +27,7 @@ pipeline {
                         cd client
                         npm install
                         VITE_API_URL= npm run build
+                        cd ..
                     '''
                 }
             }
