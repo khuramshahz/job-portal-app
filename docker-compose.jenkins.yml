@@ -7,7 +7,7 @@ services:
     container_name: jenkins-job-portal-web
     restart: always
     working_dir: /app
-    command: sh -c "if [ ! -d node_modules ]; then npm install --production; fi && node index.js"
+    command: sh -c "npm install --production && node index.js"
     ports:
       - "8081:5000"  # Different port
     environment:
