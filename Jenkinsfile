@@ -2,23 +2,15 @@ pipeline {
     agent any
 
     environment {
-        // GitHub repository URL
         REPO_URL = 'https://github.com/khuramshahz/job-portal-app.git'
         DOCKER_COMPOSE_FILE = 'docker-compose.jenkins.yml'
-    }
-
-    triggers {
-        // Trigger automatically via GitHub webhook on code push
-        githubPush()
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo '🔄 Fetching source code from GitHub...'
-                // Using Git plugin to checkout code
-                git branch: 'main', 
-                    url: "${REPO_URL}"
+                echo '🔄 Source code checked out automatically by Jenkins.'
+                sh 'ls -la'
             }
         }
 
@@ -26,12 +18,10 @@ pipeline {
             steps {
                 echo '📦 Building React frontend...'
                 script {
-                    // Build frontend before containerizing
                     sh '''
                         cd client
                         npm install
                         VITE_API_URL= npm run build
-                        cd ..
                     '''
                 }
             }
@@ -41,9 +31,6 @@ pipeline {
             steps {
                 echo '🐳 Building web application in containerized environment using Docker...'
                 script {
-                    // Using Docker Pipeline plugin - build containers with docker-compose
-                    // docker-compose.jenkins.yml uses volumes instead of Dockerfile
-                    // and has different port numbers and container names
                     sh '''
                         docker-compose -f ${DOCKER_COMPOSE_FILE} down || true
                         docker-compose -f ${DOCKER_COMPOSE_FILE} up -d --build
@@ -84,4 +71,3 @@ pipeline {
         }
     }
 }
-
