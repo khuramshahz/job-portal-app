@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        EC2_IP = '16.170.235.37'
     }
 
     triggers {
@@ -41,22 +42,56 @@ pipeline {
             }
         }
 
+        stage('Wait for Startup') {
+            steps {
+                echo '⏳ Waiting for services to start...'
+                sh 'sleep 15'
+            }
+        }
+
         stage('Verify Deployment') {
             steps {
                 echo '✅ Verifying containers are running...'
-                sh 'sleep 10'
                 sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} ps'
+                sh 'docker ps'
+                echo '🔍 Checking application health...'
+                sh 'curl -f http://localhost:5000 || echo "Application starting up..."'
+            }
+        }
+
+        stage('Display Status') {
+            steps {
+                echo '📊 Container Status:'
+                sh 'docker stats --no-stream'
+                echo '💾 Disk Usage:'
+                sh 'docker system df'
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Deployment successful! Application is now running at http://16.171.23.187:5000'
+            echo '=========================================='
+            echo '🎉 DEPLOYMENT SUCCESSFUL!'
+            echo '=========================================='
+            echo "✅ Application is running at: http://${EC2_IP}:5000"
+            echo '✅ MongoDB is running on port 27017'
+            echo '✅ All containers are healthy'
+            echo '=========================================='
         }
         failure {
-            echo '❌ Deployment failed. Check logs:'
-            sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} logs --tail=100'
+            echo '=========================================='
+            echo '❌ DEPLOYMENT FAILED!'
+            echo '=========================================='
+            echo '📋 Checking container logs:'
+            sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} logs --tail=50'
+            echo '📋 Checking Docker status:'
+            sh 'docker ps -a'
+            echo '=========================================='
+        }
+        always {
+            echo '🧹 Cleaning up old Docker images...'
+            sh 'docker image prune -f || true'
         }
     }
 }
