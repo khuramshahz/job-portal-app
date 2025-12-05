@@ -2,78 +2,61 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/khuramshahz/job-portal-app.git'
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     triggers {
-        // Trigger automatically via GitHub webhook on code push
         githubPush()
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                echo '🔄 Source code checked out automatically by Jenkins.'
-                sh 'ls -la'
+                echo '📥 Checking out code from GitHub...'
+                checkout scm
             }
         }
 
         stage('Build Frontend') {
             steps {
                 echo '📦 Building React frontend...'
-                script {
-                    sh '''
-                        cd client
-                        npm install
-                        VITE_API_URL= npm run build
-                        cd ..
-                    '''
+                dir('client') {
+                    sh 'npm install'
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Build Containers') {
+        stage('Stop Existing Containers') {
             steps {
-                echo '🐳 Building web application in containerized environment using Docker...'
-                script {
-                    sh '''
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} down || true
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} up -d --build
-                    '''
-                }
+                echo '🛑 Stopping existing containers...'
+                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down || true'
             }
         }
 
-        stage('Verify Containers') {
+        stage('Build and Start Containers') {
             steps {
-                echo '✅ Verifying running containers...'
-                script {
-                    sh '''
-                        sleep 10
-                        docker-compose -f ${DOCKER_COMPOSE_FILE} ps
-                        docker ps --filter "name=job-portal" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-                    '''
-                }
+                echo '🐳 Building and starting Docker containers...'
+                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d --build'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo '✅ Verifying containers are running...'
+                sh 'sleep 10'
+                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} ps'
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Build successful! Web application is running inside Docker containers.'
-            script {
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} ps'
-            }
+            echo '🎉 Deployment successful! Application is now running at http://16.171.23.187:5000'
         }
         failure {
-            echo '❌ Build failed. Check Jenkins console logs for details.'
-            script {
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} logs --tail=50'
-            }
-        }
-        always {
-            echo 'Pipeline execution completed.'
+            echo '❌ Deployment failed. Check logs:'
+            sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} logs --tail=100'
         }
     }
 }

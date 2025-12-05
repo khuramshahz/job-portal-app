@@ -1,4 +1,4 @@
-# Docker Deployment Guide for Job Portal
+ # Docker Deployment Guide for Job Portal
 
 ## Overview
 This guide explains how to containerize and deploy the Job Portal application using Docker and Docker Compose on AWS EC2.
