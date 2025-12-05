@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPO_URL = 'https://github.com/khuramshahz/job-portal-app.git'
-        DOCKER_COMPOSE_FILE = 'docker-compose.jenkins.yml'
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
     }
 
     triggers {
@@ -52,7 +52,7 @@ pipeline {
                     sh '''
                         sleep 10
                         docker-compose -f ${DOCKER_COMPOSE_FILE} ps
-                        docker ps --filter "name=jenkins-job-portal" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+                        docker ps --filter "name=job-portal" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
                     '''
                 }
             }
