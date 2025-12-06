@@ -50,17 +50,18 @@ pipeline {
         }
 
         stage('Run Automated Tests') {
-            agent {
-                docker {
-                    image 'markhobson/maven-chrome'
-                    args '-u root:root -v /var/lib/jenkins/.m2:/root/.m2 --network host'
-                    reuseNode true
-                }
-            }
             steps {
-                echo '🧪 Running Selenium automated tests...'
-                dir('selenium-tests') {
-                    sh 'mvn clean test'
+                echo '🧪 Running Selenium automated tests in Docker container...'
+                script {
+                    // Run tests in Docker container with Maven and Chrome
+                    sh '''
+                        docker run --rm \
+                        -v "$(pwd)/selenium-tests:/tests" \
+                        -v "$HOME/.m2:/root/.m2" \
+                        --network host \
+                        markhobson/maven-chrome \
+                        bash -c "cd /tests && mvn clean test"
+                    '''
                 }
             }
         }
