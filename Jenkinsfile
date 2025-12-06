@@ -18,16 +18,6 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                echo '📦 Building React frontend...'
-                dir('client') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
-
         stage('Stop Existing Containers') {
             steps {
                 echo '🛑 Stopping existing containers...'
