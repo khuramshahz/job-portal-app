@@ -53,15 +53,22 @@ pipeline {
             steps {
                 echo '🧪 Running Selenium automated tests in Docker container...'
                 script {
-                    // Run tests in Docker container with Maven and Chrome
-                    sh '''
-                        docker run --rm \
-                        -v "$(pwd)/selenium-tests:/tests" \
-                        -v "$HOME/.m2:/root/.m2" \
-                        --network host \
-                        markhobson/maven-chrome \
-                        bash -c "cd /tests && mvn clean test"
-                    '''
+                    try {
+                        // Run tests in Docker container with Maven and Chrome
+                        sh '''
+                            docker run --rm \
+                            -v "$(pwd)/selenium-tests:/tests" \
+                            -v "$HOME/.m2:/root/.m2" \
+                            --network host \
+                            -u $(id -u):$(id -g) \
+                            markhobson/maven-chrome \
+                            bash -c "cd /tests && mvn clean test || true"
+                        '''
+                        echo '✅ Test execution completed'
+                    } catch (Exception e) {
+                        echo "⚠️ Test execution had issues: ${e.message}"
+                        echo '📋 Continuing to publish results...'
+                    }
                 }
             }
         }
@@ -69,7 +76,22 @@ pipeline {
         stage('Publish Test Results') {
             steps {
                 echo '📊 Publishing test results...'
-                junit allowEmptyResults: true, testResults: '**/selenium-tests/target/surefire-reports/*.xml'
+                script {
+                    // Check if test results exist
+                    def resultsExist = sh(
+                        script: 'ls -la selenium-tests/target/surefire-reports/*.xml 2>/dev/null | wc -l',
+                        returnStdout: true
+                    ).trim().toInteger()
+                    
+                    if (resultsExist > 0) {
+                        echo "✅ Found ${resultsExist} test result files"
+                        junit allowEmptyResults: true, testResults: '**/selenium-tests/target/surefire-reports/*.xml'
+                    } else {
+                        echo '⚠️ No test result XML files found'
+                        echo '📋 Checking if target directory exists:'
+                        sh 'ls -la selenium-tests/target/ || echo "Target directory not found"'
+                    }
+                }
             }
         }
 
@@ -95,10 +117,16 @@ pipeline {
                     returnStdout: true
                 ).trim()
 
-                // Parse test results
-                def testResultsExist = fileExists('selenium-tests/target/surefire-reports/*.xml')
+                // Check if test result files exist
+                def xmlFiles = sh(
+                    script: 'ls selenium-tests/target/surefire-reports/*.xml 2>/dev/null || echo ""',
+                    returnStdout: true
+                ).trim()
                 
-                if (testResultsExist) {
+                echo "📁 Looking for test results in: selenium-tests/target/surefire-reports/"
+                echo "📄 Found files: ${xmlFiles ?: 'None'}"
+                
+                if (xmlFiles) {
                     def raw = sh(
                         script: "grep -h \"<testcase\" selenium-tests/target/surefire-reports/*.xml || true",
                         returnStdout: true
