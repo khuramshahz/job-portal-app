@@ -152,11 +152,22 @@ Commit: ${env.GIT_COMMIT?.take(7) ?: 'N/A'}
 Branch: ${env.GIT_BRANCH ?: 'main'}
 """
 
-                    emailext(
-                        to: committer,
-                        subject: "${statusEmoji} Build #${env.BUILD_NUMBER} - ${buildStatus} - Test Results",
-                        body: emailBody
-                    )
+                    echo "📧 Sending email to: ${committer}"
+                    echo "📧 Email subject: ${statusEmoji} Build #${env.BUILD_NUMBER} - ${buildStatus} - Test Results"
+                    
+                    try {
+                        emailext(
+                            to: committer,
+                            subject: "${statusEmoji} Build #${env.BUILD_NUMBER} - ${buildStatus} - Test Results",
+                            body: emailBody,
+                            mimeType: 'text/plain'
+                        )
+                        echo "✅ Email sent successfully to ${committer}"
+                    } catch (Exception e) {
+                        echo "⚠️ Failed to send email via emailext: ${e.message}"
+                        echo "📧 Email content that would have been sent:"
+                        echo emailBody
+                    }
                 } else {
                     echo '⚠️ No test results found to send email'
                 }
