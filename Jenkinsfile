@@ -31,14 +31,14 @@ pipeline {
         stage('Stop Existing Containers') {
             steps {
                 echo '🛑 Stopping existing containers...'
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down || true'
+                sh 'docker compose -f ${DOCKER_COMPOSE_FILE} down || true'
             }
         }
 
         stage('Build and Start Containers') {
             steps {
                 echo '🐳 Building and starting Docker containers...'
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d --build'
+                sh 'docker compose -f ${DOCKER_COMPOSE_FILE} up -d --build'
             }
         }
 
