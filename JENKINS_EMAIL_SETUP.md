@@ -1,4 +1,7 @@
-# Jenkins Email Configuration Guide
+# Jenkins Email Configuration Guide for Test Results Notification
+
+## Overview
+This guide helps you configure Jenkins to send automated email notifications with detailed test results after each build completes. The pipeline sends test summary, pass/fail counts, and build status to the commit author.
 
 ## Step 1: Configure Extended Email Plugin
 
@@ -8,12 +11,14 @@
 
 3. **Configure SMTP Server:**
    - SMTP server: `smtp.gmail.com`
-   - SMTP Port: `465` (for SSL) or `587` (for TLS)
-   - Click "Advanced..."
-   - Check "Use SMTP Authentication"
-   - User Name: Your Gmail address (e.g., `your-email@gmail.com`)
-   - Password: Your Gmail App Password (NOT your regular password)
-   - Check "Use SSL" (if port 465) or "Use TLS" (if port 587)
+   - SMTP Port: `587` (recommended for TLS)
+   - Click "Advanced..." button
+   - ✅ Check "Use SMTP Authentication"
+   - User Name: Your Gmail address (e.g., `khuramshahzad972001@gmail.com`)
+   - Password: Your Gmail App Password (16-character password, NOT your regular Gmail password)
+   - ✅ Check "Use TLS"
+   - Reply-To Address: `$DEFAULT_REPLYTO`
+   - Charset: `UTF-8`
 
 4. **Default Recipients:**
    - Leave blank (pipeline will specify recipients)
