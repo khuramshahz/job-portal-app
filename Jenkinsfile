@@ -52,7 +52,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 echo '✅ Verifying containers are running...'
-                sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} ps'
+                sh 'docker compose -f ${DOCKER_COMPOSE_FILE} ps'
                 sh 'docker ps'
                 echo '🔍 Checking application health...'
                 sh 'curl -f http://localhost:5000 || echo "Application starting up..."'
@@ -84,7 +84,7 @@ pipeline {
             echo '❌ DEPLOYMENT FAILED!'
             echo '=========================================='
             echo '📋 Checking container logs:'
-            sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} logs --tail=50'
+            sh 'docker compose -f ${DOCKER_COMPOSE_FILE} logs --tail=50'
             echo '📋 Checking Docker status:'
             sh 'docker ps -a'
             echo '=========================================='
