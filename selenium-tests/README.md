@@ -1,7 +1,7 @@
 # Selenium Tests for Job Portal Application
 
 ## Overview
-This directory contains Selenium WebDriver tests written in Java for testing the Job Portal application in headless mode.
+This directory contains automated Selenium WebDriver tests written in Java for testing the Job Portal application deployed on AWS EC2. Tests run in headless Chrome mode and are integrated with Jenkins CI/CD pipeline.
 
 ## Prerequisites
 - Java 17 or higher
@@ -9,18 +9,25 @@ This directory contains Selenium WebDriver tests written in Java for testing the
 - Chrome browser (for ChromeDriver)
 
 ## Test Structure
-Each test file contains a single test case:
+Each test file contains a single test case (Total: 12 tests):
 
 1. **HomePageLoadTest.java** - Tests if home page loads successfully
-2. **LoginPageTest.java** - Tests login page accessibility
-3. **RegisterPageTest.java** - Tests register page accessibility
-4. **JobListPageTest.java** - Tests job listing page loads
-5. **PageTitleTest.java** - Tests page title is present
+2. **LoginPageTest.java** - Tests login functionality with registration flow
+3. **RegisterPageTest.java** - Tests user registration with Material-UI form
+4. **JobListPageTest.java** - Tests job listing page with filters
+5. **PageTitleTest.java** - Tests page title is correct
 6. **NavigationTest.java** - Tests navigation between pages
-7. **ResponseTimeTest.java** - Tests page load performance
-8. **LinksTest.java** - Tests presence of links on page
+7. **ResponseTimeTest.java** - Tests page load performance under 5 seconds
+8. **LinksTest.java** - Tests all links work correctly
 9. **PageLoadCompleteTest.java** - Tests complete page loading
 10. **ResponsiveDesignTest.java** - Tests mobile viewport rendering
+11. **ApplyForJobTest.java** - Tests job application flow (create job as employer, apply as applicant)
+12. **CreateJobTest.java** - Tests employer job posting on dashboard
+
+## CI/CD Integration
+✅ **Automated Testing**: Tests run automatically on every GitHub push via Jenkins
+✅ **Email Notifications**: Test results are emailed to commit author
+✅ **EC2 Deployment**: Tests validate application running on http://16.170.235.37:5000
 
 ## Running Tests
 
